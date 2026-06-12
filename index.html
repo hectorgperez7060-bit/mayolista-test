@@ -8,13 +8,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Mayolista" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/mayolista/icon3-192.png" />
-    <link rel="icon" type="image/png" sizes="512x512" href="/mayolista/icon3-512.png" />
-    <link rel="apple-touch-icon" href="/mayolista/icon3-512.png" />
-    <link rel="manifest" href="/mayolista/manifest.json" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/mayolista-test/icon3-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/mayolista-test/icon3-512.png" />
+    <link rel="apple-touch-icon" href="/mayolista-test/icon3-512.png" />
+    <link rel="manifest" href="/mayolista-test/manifest.json" />
     <title>Mayolista</title>
-    <script type="module" crossorigin src="/mayolista/assets/index-CAHgDdPI.js"></script>
-    <link rel="stylesheet" crossorigin href="/mayolista/assets/index-DMgMh-Pn.css">
+    <script type="module" crossorigin src="/mayolista-test/assets/index-CjokWtXp.js"></script>
+    <link rel="stylesheet" crossorigin href="/mayolista-test/assets/index-DMgMh-Pn.css">
   </head>
   <body>
     <div id="root"></div>
@@ -25,7 +25,7 @@
           if (!reloading) { reloading = true; window.location.reload(); }
         });
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register(new URL('/mayolista/sw.js', location.href).pathname)
+          navigator.serviceWorker.register(new URL('/mayolista-test/sw.js', location.href).pathname)
             .then(reg => { reg.update(); });
         });
       }
