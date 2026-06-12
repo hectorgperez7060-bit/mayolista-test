@@ -1,0 +1,107 @@
+// FIRESTORE SECURITY RULES — MAYOLISTA MULTI-TENANT
+// Deploy con: firebase deploy --only firestore:rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ============ FUNCIONES AUXILIARES ============
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserEmpresaId() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.empresaId;
+    }
+    
+    function isOwnerOfEmpresa(empresaId) {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/usuarios/$(request.auth.uid)) &&
+             getUserEmpresaId() == empresaId;
+    }
+
+    function isVendedor(empresaId) {
+      return isAuthenticated() && 
+             exists(/databases/$(database)/documents/empresas/$(empresaId)/vendedores/$(request.auth.uid));
+    }
+
+    function hasAccess(empresaId) {
+      return isOwnerOfEmpresa(empresaId) || isVendedor(empresaId);
+    }
+
+    function isClienteDeEmpresa(empresaId) {
+      return isAuthenticated() &&
+             exists(/databases/$(database)/documents/usuarios/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol == 'CLIENTE' &&
+             get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.empresaId == empresaId;
+    }
+
+    // ============ EMPRESAS (Mayoristas) ============
+    match /empresas/{empresaId} {
+      allow read: if true; // público: necesario para verificar código antes de registrarse
+      allow create: if isAuthenticated();
+      allow update: if isOwnerOfEmpresa(empresaId);
+      allow delete: if false;
+    }
+
+    // ============ USUARIOS (Admins de empresas) ============
+    match /usuarios/{uid} {
+      allow read, write: if request.auth.uid == uid;
+    }
+
+    // ============ PRODUCTOS (Por empresa) ============
+    match /empresas/{empresaId}/productos/{productoId} {
+      allow read: if hasAccess(empresaId) || isClienteDeEmpresa(empresaId);
+      allow write: if isOwnerOfEmpresa(empresaId) &&
+                     request.resource.data.empresaId == empresaId;
+      allow delete: if isOwnerOfEmpresa(empresaId);
+    }
+
+    // ============ CLIENTES (Por empresa) ============
+    match /empresas/{empresaId}/clientes/{clienteId} {
+      allow read: if hasAccess(empresaId) || isClienteDeEmpresa(empresaId);
+      allow create, update: if hasAccess(empresaId) ||
+                     (isAuthenticated() && request.resource.data.empresaId == empresaId);
+      allow delete: if isOwnerOfEmpresa(empresaId);
+    }
+
+    // ============ VENDEDORES (Por empresa) ============
+    match /empresas/{empresaId}/vendedores/{vendedorId} {
+      allow read: if hasAccess(empresaId);
+      allow create: if isAuthenticated() && request.auth.uid == vendedorId;
+      allow update: if isOwnerOfEmpresa(empresaId) || (request.auth.uid == vendedorId);
+      allow delete: if isOwnerOfEmpresa(empresaId);
+    }
+
+    // ============ ÓRDENES (Por empresa) ============
+    match /empresas/{empresaId}/ordenes/{ordenId} {
+      allow read: if hasAccess(empresaId) || isClienteDeEmpresa(empresaId);
+      allow create: if (hasAccess(empresaId) || isClienteDeEmpresa(empresaId)) &&
+                      request.resource.data.empresaId == empresaId;
+      allow update: if isOwnerOfEmpresa(empresaId);
+      allow delete: if false;
+    }
+
+    // ============ SESIONES (Por empresa) ============
+    match /empresas/{empresaId}/sesiones/{sesionId} {
+      allow read, write: if hasAccess(empresaId);
+    }
+
+    // ============ OFERTAS DEL DÍA (Por empresa) ============
+    match /empresas/{empresaId}/ofertas/{ofertaId} {
+      allow read: if isAuthenticated() && (hasAccess(empresaId) || isClienteDeEmpresa(empresaId));
+      allow write: if isOwnerOfEmpresa(empresaId);
+    }
+
+    // ============ CÓDIGOS DE DESCUENTO (Por empresa) ============
+    match /empresas/{empresaId}/codigosDescuento/{codigoId} {
+      allow read, update: if isAuthenticated() && (isOwnerOfEmpresa(empresaId) || isClienteDeEmpresa(empresaId));
+      allow create, delete: if isOwnerOfEmpresa(empresaId);
+    }
+
+    // ============ VALIDACIÓN DEFAULT ============
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

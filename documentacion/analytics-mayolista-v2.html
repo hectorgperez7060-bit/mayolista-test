@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MAYOLISTA 2.0 — Análisis de Potencial Analítico y KPIs</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: #222; background: #fff; font-size: 14px; line-height: 1.6; }
+  .page { max-width: 960px; margin: 0 auto; padding: 48px 40px; }
+
+  /* HEADER */
+  .brand { font-size: 3rem; font-weight: 900; letter-spacing: -2px; color: #1a1a2e; margin-bottom: 4px; }
+  .brand span { color: #6d28d9; }
+  .brand-sub { font-size: 1rem; color: #888; margin-bottom: 48px; }
+  .doc-title { font-size: 2.2rem; font-weight: 800; color: #1e3a8a; line-height: 1.2; margin-bottom: 24px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .tag { font-size: 0.75rem; color: #555; background: #f0f0f0; padding: 3px 10px; border-radius: 4px; }
+  .doc-meta { font-size: 0.8rem; color: #aaa; margin-top: 32px; margin-bottom: 48px; }
+
+  /* SECCIONES */
+  h1 { font-size: 2rem; font-weight: 800; color: #1e3a8a; margin: 48px 0 16px; border-bottom: 3px solid #6d28d9; padding-bottom: 8px; }
+  h2 { font-size: 1.3rem; font-weight: 700; color: #1e3a8a; margin: 32px 0 12px; border-bottom: 1px solid #e5e7eb; padding-bottom: 6px; }
+  h3 { font-size: 1rem; font-weight: 700; color: #374151; margin: 20px 0 8px; }
+  p { margin-bottom: 12px; color: #444; }
+
+  /* ÍNDICE */
+  .toc { background: #f8f9fc; border-left: 4px solid #6d28d9; padding: 20px 24px; margin: 24px 0; border-radius: 0 8px 8px 0; }
+  .toc-title { font-weight: 700; color: #1e3a8a; margin-bottom: 12px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 4px; font-size: 0.88rem; color: #374151; }
+
+  /* TABLAS */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 0.83rem; }
+  th { background: #1e3a8a; color: #fff; text-align: left; padding: 10px 12px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.4px; }
+  td { padding: 9px 12px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+  tr:nth-child(even) td { background: #f9fafb; }
+  td strong { color: #1e3a8a; }
+
+  /* BADGES */
+  .badge { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
+  .badge-green  { background: #d1fae5; color: #065f46; }
+  .badge-yellow { background: #fef3c7; color: #92400e; }
+  .badge-red    { background: #fee2e2; color: #991b1b; }
+  .badge-blue   { background: #dbeafe; color: #1e40af; }
+  .badge-purple { background: #ede9fe; color: #5b21b6; }
+
+  /* ALERTAS */
+  .alert { border-left: 4px solid #f59e0b; background: #fffbeb; padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 16px 0; }
+  .alert-red { border-left-color: #ef4444; background: #fef2f2; }
+  .alert-green { border-left-color: #10b981; background: #ecfdf5; }
+  .alert-purple { border-left-color: #6d28d9; background: #f5f3ff; }
+  .alert strong { font-weight: 700; display: block; margin-bottom: 4px; }
+
+  /* CARDS GRID */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0 24px; }
+  .card { border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; }
+  .card-title { font-weight: 700; font-size: 0.85rem; color: #1e3a8a; margin-bottom: 6px; }
+  .card-body { font-size: 0.8rem; color: #666; }
+
+  /* COMPARACION v1 vs v2 */
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+  .compare-box { border-radius: 10px; padding: 18px; }
+  .compare-v1 { background: #fef2f2; border: 1px solid #fca5a5; }
+  .compare-v2 { background: #f0fdf4; border: 1px solid #86efac; }
+  .compare-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .compare-v1 .compare-label { color: #991b1b; }
+  .compare-v2 .compare-label { color: #166534; }
+  .compare-box ul { padding-left: 16px; font-size: 0.82rem; color: #444; }
+  .compare-box ul li { margin-bottom: 5px; }
+
+  /* DASHBOARD MOCKUP */
+  .dashboard { border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; margin: 20px 0; }
+  .dashboard-header { background: #1e3a8a; color: #fff; padding: 12px 18px; font-weight: 700; font-size: 0.9rem; }
+  .dashboard-body { padding: 18px; background: #f8f9fc; }
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+  .kpi-box { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; }
+  .kpi-label { font-size: 0.68rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .kpi-value { font-size: 1.4rem; font-weight: 800; color: #1e3a8a; }
+  .kpi-delta { font-size: 0.72rem; margin-top: 3px; }
+  .delta-up { color: #10b981; }
+  .delta-down { color: #ef4444; }
+
+  /* FASE */
+  .fase-row { display: grid; grid-template-columns: 100px 120px 1fr 1fr 80px; gap: 0; border-bottom: 1px solid #e5e7eb; padding: 12px 0; align-items: start; }
+  .fase-row:first-child { font-weight: 700; font-size: 0.72rem; text-transform: uppercase; color: #9ca3af; border-bottom: 2px solid #e5e7eb; }
+
+  /* REPORTE */
+  .reporte-seccion { border: 1px solid #e5e7eb; border-radius: 10px; padding: 18px; margin-bottom: 16px; }
+  .reporte-seccion-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #6d28d9; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #ede9fe; }
+  .reporte-cita { font-style: italic; color: #555; font-size: 0.88rem; line-height: 1.7; background: #f9fafb; padding: 14px; border-radius: 6px; border-left: 3px solid #6d28d9; }
+  .reporte-item { font-size: 0.84rem; color: #444; padding: 6px 0; border-bottom: 1px dashed #e5e7eb; display: flex; align-items: center; gap: 8px; }
+  .reporte-item:last-child { border-bottom: none; }
+  .reporte-item::before { content: '▸'; color: #1e3a8a; font-weight: bold; flex-shrink: 0; }
+
+  /* FOOTER */
+  .footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 0.75rem; color: #aaa; text-align: center; }
+
+  /* PRINT */
+  @media print { .page { padding: 24px; } h1 { page-break-before: always; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- PORTADA -->
+  <div class="brand">MAYO<span>LISTA</span></div>
+  <div class="brand-sub">Plataforma de Gestión Comercial para Distribuidoras y Mayoristas</div>
+
+  <div class="doc-title">Análisis de Potencial Analítico,<br>KPIs y Capacidades de Reporting<br><span style="color:#6d28d9">— Versión 2.0 —</span></div>
+
+  <div class="tags">
+    <span class="tag">Arquitectura de Datos</span>
+    <span class="tag">Analytics Comercial</span>
+    <span class="tag">Fuerza de Ventas</span>
+    <span class="tag">SaaS Product</span>
+    <span class="tag">Reporting Automático</span>
+    <span class="tag">Firebase / Firestore</span>
+  </div>
+
+  <div class="doc-meta">
+    Documento técnico · Versión 2.0 · Mayo 2026<br>
+    Preparado para: Distribuidoras y Mayoristas PyME · Argentina<br>
+    Backend: <strong>Firebase Firestore + Cloud Functions + GitHub Pages</strong>
+  </div>
+
+  <!-- ÍNDICE -->
+  <div class="toc">
+    <div class="toc-title">Contenido del Documento</div>
+    <ol>
+      <li>Evolución del modelo: v1.0 (Supabase) vs v2.0 (Firebase)</li>
+      <li>Estado actual del modelo de datos — Firestore</li>
+      <li>Entidades que deberían existir (modelo objetivo)</li>
+      <li>Métricas calculables hoy</li>
+      <li>Métricas no calculables y datos faltantes</li>
+      <li>Inventario exhaustivo de KPIs por categoría</li>
+      <li>Eventos históricos a registrar desde ahora</li>
+      <li>Sistema de alertas automáticas</li>
+      <li>Analítica avanzada y modelos predictivos</li>
+      <li>Dashboard ejecutivo ideal</li>
+      <li>Dashboard para supervisores</li>
+      <li>Reporte mensual automático por IA</li>
+      <li>Hoja de ruta analítica</li>
+    </ol>
+  </div>
+
+  <!-- SECCIÓN 1 -->
+  <h1>1. Evolución del Modelo: v1.0 vs v2.0</h1>
+
+  <p>Mayolista evolucionó de una primera versión basada en <strong>Supabase (PostgreSQL)</strong> hacia una arquitectura completamente nueva en <strong>Firebase Firestore</strong>, con autenticación real, roles diferenciados y sincronización en tiempo real entre admin y vendedores.</p>
+
+  <div class="compare-grid">
+    <div class="compare-box compare-v1">
+      <div class="compare-label">v1.0 — Supabase (anterior)</div>
+      <ul>
+        <li>Backend: Supabase / PostgreSQL</li>
+        <li>Tablas: pedidos, clientes, vendedores, perfiles, catalogo</li>
+        <li>Cliente en pedido: texto libre en session_data (sin FK)</li>
+        <li>Sin autenticación diferenciada por rol</li>
+        <li>Sin sesiones de vendedor registradas</li>
+        <li>Sin descuento global de pedido persistido</li>
+        <li>Sin método de entrada registrado</li>
+        <li>Sin bloqueo/desbloqueo de vendedores en tiempo real</li>
+        <li>Sin código de empresa para onboarding</li>
+        <li>PWA sin sincronización reactiva</li>
+      </ul>
+    </div>
+    <div class="compare-box compare-v2">
+      <div class="compare-label">v2.0 — Firebase (actual)</div>
+      <ul>
+        <li>Backend: Firebase Firestore + Auth + Cloud Functions</li>
+        <li>Colecciones: empresas, vendedores, clientes, productos, ordenes, usuarios, <strong>sesiones ✓ nuevo</strong></li>
+        <li>Cliente embebido en orden (nombre + dirección + teléfono)</li>
+        <li>Roles reales: ADMIN / VENDEDOR con Firebase Auth</li>
+        <li>Sesiones de vendedor registradas con loginAt/logoutAt ✓ nuevo</li>
+        <li>descuentoPedido persistido en Firestore ✓ nuevo</li>
+        <li>metodoEntrada registrado (voz/texto/IA/escáner) ✓ nuevo</li>
+        <li>Bloqueo en tiempo real con onSnapshot</li>
+        <li>Código de empresa para alta de vendedores</li>
+        <li>Sincronización reactiva de catálogo y clientes</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="alert alert-green">
+    <strong>Mejoras analíticas incorporadas en v2.0 durante esta sesión</strong>
+    Tres cambios de código fueron implementados para habilitar analítica que antes no existía: (1) <code>descuentoPedido</code> ahora se persiste en cada orden, (2) <code>metodoEntrada</code> clasifica cómo se cargó el pedido, (3) colección <code>sesiones</code> registra horario de entrada/salida de cada vendedor.
+  </div>
+
+  <!-- SECCIÓN 2 -->
+  <h1>2. Estado Actual del Modelo de Datos — Firestore</h1>
+
+  <h2>2.1 Estructura de Colecciones en Firestore</h2>
+
+  <table>
+    <tr>
+      <th>Colección</th>
+      <th>Campos principales</th>
+      <th>Estado</th>
+      <th>Observación</th>
+    </tr>
+    <tr>
+      <td><strong>empresas/{id}</strong></td>
+      <td>nombre, cuit, email, telefono, condicionIVA, logo, codigo, ownerId, estado, plan, createdAt</td>
+      <td><span class="badge badge-green">ACTIVA</span></td>
+      <td>Representa cada distribuidora. Contiene subcolecciones.</td>
+    </tr>
+    <tr>
+      <td><strong>empresas/{id}/vendedores/{id}</strong></td>
+      <td>nombre, email, estado, pin (hash bcrypt), sessionId, lastSeen, bloqueado, createdAt</td>
+      <td><span class="badge badge-green">ACTIVA</span></td>
+      <td>Última presencia registrada. Sin historial de sesiones hasta v2.0.</td>
+    </tr>
+    <tr>
+      <td><strong>empresas/{id}/clientes/{id}</strong></td>
+      <td>name, address, phone, empresaId, createdAt, deleted</td>
+      <td><span class="badge badge-yellow">PARCIAL</span></td>
+      <td>Sin zona, categoría, fecha última compra ni estado activo/inactivo.</td>
+    </tr>
+    <tr>
+      <td><strong>empresas/{id}/productos/{id}</strong></td>
+      <td>code, name, description, price, brand, presentation, weight, category, synonyms, createdAt</td>
+      <td><span class="badge badge-yellow">PARCIAL</span></td>
+      <td>Sin costo, sin stock, sin historial de precios.</td>
+    </tr>
+    <tr>
+      <td><strong>empresas/{id}/ordenes/{id}</strong></td>
+      <td>cliente (obj), items (array), total, vendedorId, vendedorNombre, estado, descuentoPedido ✓, metodoEntrada ✓, createdAt</td>
+      <td><span class="badge badge-green">ACTIVA</span></td>
+      <td>descuentoPedido y metodoEntrada agregados en v2.0.</td>
+    </tr>
+    <tr>
+      <td><strong>empresas/{id}/sesiones/{id}</strong></td>
+      <td>vendedorId, vendedorNombre, loginAt, logoutAt, duracionMinutos, empresaId</td>
+      <td><span class="badge badge-purple">NUEVO v2.0</span></td>
+      <td>Colección creada en esta versión. Registra cada sesión completa.</td>
+    </tr>
+    <tr>
+      <td><strong>usuarios/{uid}</strong></td>
+      <td>empresaId, email, rol (ADMIN/VENDEDOR), sessions[], createdAt</td>
+      <td><span class="badge badge-green">ACTIVA</span></td>
+      <td>Control de sesiones múltiples para admin (máximo 2 simultáneas).</td>
+    </tr>
+  </table>
+
+  <div class="alert alert-red">
+    <strong>⚠ Limitación crítica mantenida de v1.0</strong>
+    Los pedidos NO vinculan un <code>clienteId</code> como referencia formal — el cliente va embebido como objeto (nombre, dirección, teléfono). Esto impide calcular métricas por cliente de forma confiable sin parseo posterior. Es la acción de mayor impacto analítico pendiente.
+  </div>
+
+  <h2>2.2 Estructura de un Orden en v2.0</h2>
+  <table>
+    <tr><th>Campo</th><th>Tipo</th><th>Ejemplo</th><th>Novedad</th></tr>
+    <tr><td>cliente</td><td>Objeto</td><td>{name, address, phone}</td><td>v1.0</td></tr>
+    <tr><td>items</td><td>Array</td><td>[{product:{code,name,price,brand}, quantity, subtotal, discount:{type,value}}]</td><td>v1.0</td></tr>
+    <tr><td>total</td><td>Number</td><td>45800</td><td>v1.0</td></tr>
+    <tr><td>vendedorId</td><td>String</td><td>uid de Firebase Auth</td><td>v1.0</td></tr>
+    <tr><td>vendedorNombre</td><td>String</td><td>"María González"</td><td>v1.0</td></tr>
+    <tr><td>estado</td><td>String</td><td>pendiente / visto / cancelada</td><td>v1.0</td></tr>
+    <tr><td><strong>descuentoPedido</strong></td><td>Number | null</td><td>10 (= 10% sobre el total)</td><td><span class="badge badge-purple">NUEVO v2.0</span></td></tr>
+    <tr><td><strong>metodoEntrada</strong></td><td>String</td><td>texto-ia / voz-ia / voz / texto / escaner / manual</td><td><span class="badge badge-purple">NUEVO v2.0</span></td></tr>
+  </table>
+
+  <!-- SECCIÓN 3 -->
+  <h1>3. Entidades que Deberían Existir — Modelo Objetivo</h1>
+
+  <table>
+    <tr>
+      <th>Entidad</th>
+      <th>Estado</th>
+      <th>Campos mínimos a agregar</th>
+      <th>Para qué sirve analíticamente</th>
+    </tr>
+    <tr>
+      <td><strong>empresas</strong></td>
+      <td><span class="badge badge-green">EXISTE</span></td>
+      <td>+ zona_geografica, tipo_negocio, cant_vendedores_max, fecha_alta</td>
+      <td>Segmentación de clientes SaaS, cohort analysis, LTV</td>
+    </tr>
+    <tr>
+      <td><strong>vendedores</strong></td>
+      <td><span class="badge badge-yellow">PARCIAL</span></td>
+      <td>+ zona_id, meta_mensual, categoria, fecha_alta</td>
+      <td>Performance individual, scoring, cumplimiento de metas</td>
+    </tr>
+    <tr>
+      <td><strong>clientes</strong></td>
+      <td><span class="badge badge-yellow">PARCIAL</span></td>
+      <td>+ zona, categoria (A/B/C), activo, fecha_alta, fecha_ultima_compra, vendedor_asignado_id</td>
+      <td>Segmentación RFM, churn, concentración</td>
+    </tr>
+    <tr>
+      <td><strong>ordenes</strong></td>
+      <td><span class="badge badge-yellow">PARCIAL</span></td>
+      <td>+ clienteId (FK real) — acción de mayor impacto</td>
+      <td>Todos los KPIs por cliente, frecuencia de recompra</td>
+    </tr>
+    <tr>
+      <td><strong>productos</strong></td>
+      <td><span class="badge badge-yellow">PARCIAL</span></td>
+      <td>+ costo, stock_actual, stock_minimo, proveedor, fecha_ultimo_precio</td>
+      <td>Rentabilidad, alertas de stock, rotación</td>
+    </tr>
+    <tr>
+      <td><strong>sesiones</strong></td>
+      <td><span class="badge badge-purple">NUEVO v2.0</span></td>
+      <td>vendedorId, loginAt, logoutAt, duracionMinutos — YA IMPLEMENTADO</td>
+      <td>Productividad por hora, horas pico, engagement</td>
+    </tr>
+    <tr>
+      <td><strong>precios_historico</strong></td>
+      <td><span class="badge badge-red">FALTA</span></td>
+      <td>productoId, precioAnterior, precioNuevo, cambiadoPor, timestamp</td>
+      <td>Análisis de impacto de aumentos, elasticidad</td>
+    </tr>
+    <tr>
+      <td><strong>zonas</strong></td>
+      <td><span class="badge badge-red">FALTA</span></td>
+      <td>nombre, vendedoresAsignados[], clientesAsignados[], empresaId</td>
+      <td>Análisis geográfico, cobertura, productividad por zona</td>
+    </tr>
+    <tr>
+      <td><strong>metas_comerciales</strong></td>
+      <td><span class="badge badge-red">FALTA</span></td>
+      <td>vendedorId, periodo (YYYY-MM), meta_monto, meta_pedidos, meta_clientes</td>
+      <td>Cumplimiento vs objetivo, incentivos, comisiones</td>
+    </tr>
+    <tr>
+      <td><strong>visitas_comerciales</strong></td>
+      <td><span class="badge badge-red">FALTA</span></td>
+      <td>vendedorId, clienteId, fecha, resultado, lat, lng, notas, ordenId</td>
+      <td>Efectividad de visita, cobertura real, rutas</td>
+    </tr>
+    <tr>
+      <td><strong>cobranza</strong></td>
+      <td><span class="badge badge-red">FALTA</span></td>
+      <td>clienteId, ordenIds[], monto, fechaVenc, fechaPago, estado, metodoPago</td>
+      <td>DSO, morosidad, flujo de caja</td>
+    </tr>
+    <tr>
+      <td><strong>eventos_app</strong></td>
+      <td><span class="badge badge-red">FALTA</span></td>
+      <td>tipo, vendedorId, empresaId, payload, timestamp, deviceId</td>
+      <td>Funnel de uso, features más usadas, detección de problemas</td>
+    </tr>
+  </table>
+
+  <!-- SECCIÓN 4 -->
+  <h1>4. Métricas Calculables Hoy (con datos existentes en v2.0)</h1>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">Facturación bruta</div>
+      <div class="card-body">Suma de totales por período, por vendedor, por empresa. Disponible desde createdAt de órdenes.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Volumen de pedidos</div>
+      <div class="card-body">Total pedidos por día/semana/mes, por vendedor, por estado (pendiente/visto/cancelada).</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Ticket promedio</div>
+      <div class="card-body">Facturación total ÷ cantidad de pedidos. Por vendedor y global.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Actividad de vendedores</div>
+      <div class="card-body">Última conexión (lastSeen), estado activo/bloqueado, pedidos por vendedor.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Sesiones — NUEVO v2.0</div>
+      <div class="card-body">Tiempo conectado, hora de ingreso, duración de sesión, días activos por mes.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Descuentos — NUEVO v2.0</div>
+      <div class="card-body">% descuento promedio, monto resignado, vendedores que más descuentan.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Método de carga — NUEVO v2.0</div>
+      <div class="card-body">Distribución de pedidos por canal: voz-IA, texto-IA, voz, texto, escáner, manual.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Productos más vendidos</div>
+      <div class="card-body">Suma de cantidades por código de producto dentro del array items de órdenes.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Evolución histórica</div>
+      <div class="card-body">Tendencia de facturación semana a semana, mes a mes desde createdAt.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Horarios de operación</div>
+      <div class="card-body">Distribución de pedidos por hora del día y día de la semana.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Catálogo sin ventas</div>
+      <div class="card-body">Productos que no aparecen en ninguna orden reciente.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Estado de pedidos</div>
+      <div class="card-body">Pendientes sin ver, tiempo promedio de atención (createdAt → updatedAt con estado=visto).</div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 5 -->
+  <h1>5. Métricas No Calculables y Datos Faltantes</h1>
+
+  <table>
+    <tr>
+      <th>Métrica deseada</th>
+      <th>Por qué no se puede hoy</th>
+      <th>Dato a registrar</th>
+    </tr>
+    <tr>
+      <td>Análisis por cliente individual</td>
+      <td>No hay clienteId como FK en órdenes; cliente es objeto embebido (texto)</td>
+      <td>Vincular orden a clientes/{id} al confirmar</td>
+    </tr>
+    <tr>
+      <td>Frecuencia de recompra por cliente</td>
+      <td>Sin FK cliente en órdenes; no se puede agrupar de forma confiable</td>
+      <td>FK clienteId en órdenes</td>
+    </tr>
+    <tr>
+      <td>Churn / abandono de clientes</td>
+      <td>Sin historial de relación cliente–pedido rastreable</td>
+      <td>FK clienteId + fecha_ultima_compra en clientes</td>
+    </tr>
+    <tr>
+      <td>Rentabilidad por producto</td>
+      <td>No hay campo costo en productos, solo precio de venta</td>
+      <td>Campo costo en productos</td>
+    </tr>
+    <tr>
+      <td>Cumplimiento de metas</td>
+      <td>No hay colección de objetivos por vendedor</td>
+      <td>Colección metas_comerciales</td>
+    </tr>
+    <tr>
+      <td>Efectividad de visitas comerciales</td>
+      <td>No hay registro de visitas</td>
+      <td>Colección visitas_comerciales</td>
+    </tr>
+    <tr>
+      <td>DSO / morosidad / cobranza</td>
+      <td>No hay módulo de cobranza</td>
+      <td>Colección cobranza con montos y fechas</td>
+    </tr>
+    <tr>
+      <td>Análisis geográfico</td>
+      <td>Sin coordenadas ni zonas asignadas</td>
+      <td>Campo zona en clientes + colección zonas</td>
+    </tr>
+    <tr>
+      <td>Tasa de adopción por feature</td>
+      <td>No hay colección de eventos de uso (solo metodoEntrada parcial)</td>
+      <td>Colección eventos_app completa</td>
+    </tr>
+    <tr>
+      <td>Historial de precios</td>
+      <td>Solo precio actual en productos</td>
+      <td>Colección precios_historico</td>
+    </tr>
+    <tr>
+      <td>Rotación de stock</td>
+      <td>No hay stock en el sistema</td>
+      <td>Campo stock_actual en productos</td>
+    </tr>
+    <tr>
+      <td>NPS / satisfacción de clientes</td>
+      <td>No hay módulo de feedback</td>
+      <td>Encuesta post-pedido (1 sola pregunta)</td>
+    </tr>
+  </table>
+
+  <!-- SECCIÓN 6 -->
+  <h1>6. Inventario Exhaustivo de KPIs por Categoría</h1>
+
+  <h2>6.1 Actividad de Vendedores</h2>
+  <table>
+    <tr><th>KPI</th><th>Cómo se calcula</th><th>Dato necesario</th><th>Hist.</th><th>Valor de negocio</th></tr>
+    <tr><td><strong>Vendedores conectados por día</strong></td><td>COUNT DISTINCT vendedorId en sesiones WHERE DATE(loginAt) = hoy</td><td>sesiones.loginAt ✓ v2.0</td><td>SÍ</td><td>Detectar ausentismo, planificación de cobertura</td></tr>
+    <tr><td><strong>Vendedores sin actividad en N días</strong></td><td>Vendedores con lastSeen > 3 días sin orden nueva</td><td>vendedores.lastSeen + ordenes</td><td>SÍ</td><td>Alerta temprana de caída operativa</td></tr>
+    <tr><td><strong>Última conexión por vendedor</strong></td><td>MAX(lastSeen) GROUP BY vendedorId</td><td>vendedores.lastSeen</td><td>SÍ</td><td>Monitoreo en tiempo real del equipo</td></tr>
+    <tr><td><strong>Tiempo promedio conectado por día</strong></td><td>AVG(duracionMinutos) por vendedor, fecha</td><td>sesiones.duracionMinutos ✓ v2.0</td><td>SÍ</td><td>Medir esfuerzo real vs. resultados</td></tr>
+    <tr><td><strong>Sesiones por vendedor/mes</strong></td><td>COUNT sesiones GROUP BY vendedorId, mes</td><td>sesiones ✓ v2.0</td><td>SÍ</td><td>Frecuencia de uso y constancia</td></tr>
+    <tr><td><strong>Duración promedio de sesión</strong></td><td>AVG(logoutAt - loginAt) por vendedor</td><td>sesiones ✓ v2.0</td><td>SÍ</td><td>Detectar sesiones muy cortas o muy largas</td></tr>
+    <tr><td><strong>Horas pico de operación</strong></td><td>COUNT ordenes GROUP BY HOUR(createdAt)</td><td>ordenes.createdAt</td><td>SÍ</td><td>Optimizar soporte, planificar carga</td></tr>
+    <tr><td><strong>Días con más actividad</strong></td><td>COUNT ordenes GROUP BY DAYOFWEEK(createdAt)</td><td>ordenes.createdAt</td><td>SÍ</td><td>Planificación de ruteo y visitas</td></tr>
+    <tr><td><strong>Ranking de vendedores por actividad</strong></td><td>COUNT(ordenes) + SUM(duracionSesiones) ORDER DESC</td><td>ordenes + sesiones ✓ v2.0</td><td>SÍ</td><td>Gamificación, incentivos, supervisión</td></tr>
+    <tr><td><strong>Vendedores sin actividad mensual</strong></td><td>Vendedores sin ninguna orden en el mes</td><td>vendedores + ordenes</td><td>SÍ</td><td>Gestión de ausencias, posible baja del plan</td></tr>
+  </table>
+
+  <h2>6.2 Performance Comercial</h2>
+  <table>
+    <tr><th>KPI</th><th>Cómo se calcula</th><th>Dato necesario</th><th>Hist.</th><th>Valor de negocio</th></tr>
+    <tr><td><strong>Facturación total por período</strong></td><td>SUM(total) WHERE createdAt IN período</td><td>ordenes.total + createdAt</td><td>SÍ</td><td>KPI principal de salud comercial</td></tr>
+    <tr><td><strong>Crecimiento mensual (%)</strong></td><td>(mes_actual - mes_anterior) / mes_anterior × 100</td><td>ordenes históricos</td><td>SÍ</td><td>Tendencia del negocio, proyecciones</td></tr>
+    <tr><td><strong>Facturación por vendedor</strong></td><td>SUM(total) GROUP BY vendedorId, período</td><td>ordenes.vendedorId + total</td><td>SÍ</td><td>Ranking de productividad, comisiones</td></tr>
+    <tr><td><strong>Ticket promedio por vendedor</strong></td><td>SUM(total) / COUNT(ordenes) por vendedor</td><td>ordenes.vendedorId + total</td><td>SÍ</td><td>Calidad vs. volumen de ventas</td></tr>
+    <tr><td><strong>Pedidos por vendedor por día</strong></td><td>COUNT ordenes GROUP BY vendedorId, DATE(createdAt)</td><td>ordenes.vendedorId + createdAt</td><td>SÍ</td><td>Ritmo de trabajo, capacidad operativa</td></tr>
+    <tr><td><strong>Cumplimiento de meta mensual (%)</strong></td><td>facturacion_vendedor / meta_vendedor × 100</td><td>metas_comerciales (FALTA)</td><td>NO</td><td>Gestión por objetivos, incentivos variables</td></tr>
+    <tr><td><strong>Proyección de cierre mensual</strong></td><td>Facturación al día N ÷ N × días del mes</td><td>ordenes del mes actual</td><td>SÍ</td><td>Gestión proactiva antes del cierre</td></tr>
+    <tr><td><strong>Descuento promedio aplicado — NUEVO v2.0</strong></td><td>AVG(descuentoPedido) donde descuentoPedido IS NOT NULL</td><td>ordenes.descuentoPedido ✓ v2.0</td><td>SÍ</td><td>Control de márgenes en tiempo real</td></tr>
+    <tr><td><strong>Monto total resignado en descuentos — NUEVO v2.0</strong></td><td>SUM(total_sin_desc - total_con_desc) por período</td><td>ordenes.descuentoPedido ✓ v2.0</td><td>SÍ</td><td>Impacto económico real de la política comercial</td></tr>
+    <tr><td><strong>Pedidos por método de entrada — NUEVO v2.0</strong></td><td>COUNT GROUP BY metodoEntrada</td><td>ordenes.metodoEntrada ✓ v2.0</td><td>SÍ</td><td>Adopción de IA y voz, valor de cada feature</td></tr>
+  </table>
+
+  <h2>6.3 Comportamiento de Clientes</h2>
+  <table>
+    <tr><th>KPI</th><th>Cómo se calcula</th><th>Dato necesario</th><th>Hist.</th><th>Valor de negocio</th></tr>
+    <tr><td><strong>Clientes activos en el mes</strong></td><td>COUNT DISTINCT cliente.name en órdenes del mes (aproximado sin FK)</td><td>ordenes.cliente.name</td><td>NO</td><td>Base de clientes vivos del negocio</td></tr>
+    <tr><td><strong>Clientes sin compra en 30/60/90 días</strong></td><td>MAX(createdAt) por cliente; filtrar por &gt; umbral</td><td>FK clienteId en órdenes (FALTA)</td><td>NO</td><td>Detección temprana de abandono</td></tr>
+    <tr><td><strong>Frecuencia promedio de recompra</strong></td><td>AVG(días entre órdenes consecutivas) por cliente</td><td>FK clienteId + historial</td><td>NO</td><td>Gestión del ciclo de compra</td></tr>
+    <tr><td><strong>LTV (Lifetime Value) por cliente</strong></td><td>SUM(total) por clienteId, acumulado histórico</td><td>FK clienteId en órdenes (FALTA)</td><td>NO</td><td>Segmentación por valor, negociación</td></tr>
+    <tr><td><strong>Clientes nuevos por mes</strong></td><td>COUNT clientes WHERE createdAt IN mes actual</td><td>clientes.createdAt (EXISTE)</td><td>SÍ</td><td>Crecimiento de cartera</td></tr>
+    <tr><td><strong>Tasa de retención mensual</strong></td><td>Clientes activos mes N que también estuvieron en N-1 / total mes N-1</td><td>FK clienteId + historial (FALTA)</td><td>NO</td><td>Lealtad comercial, estabilidad del negocio</td></tr>
+    <tr><td><strong>Concentración de ventas (Pareto)</strong></td><td>% ventas del top 20% de clientes</td><td>FK clienteId en órdenes (FALTA)</td><td>NO</td><td>Riesgo de dependencia, diversificación</td></tr>
+    <tr><td><strong>Segmentación RFM</strong></td><td>Recency + Frequency + Monetary por cliente → score compuesto</td><td>FK clienteId + historial completo</td><td>NO</td><td>Priorización de visitas, ofertas personalizadas</td></tr>
+  </table>
+
+  <h2>6.4 Análisis de Productos</h2>
+  <table>
+    <tr><th>KPI</th><th>Cómo se calcula</th><th>Dato necesario</th><th>Hist.</th><th>Valor de negocio</th></tr>
+    <tr><td><strong>Top 10 por unidades</strong></td><td>SUM(items[].quantity) GROUP BY product.code ORDER DESC</td><td>ordenes.items (EXISTE)</td><td>SÍ</td><td>Gestión de stock, negociación con proveedores</td></tr>
+    <tr><td><strong>Top 10 por facturación</strong></td><td>SUM(items[].subtotal) GROUP BY product.code ORDER DESC</td><td>ordenes.items (EXISTE)</td><td>SÍ</td><td>Foco en productos estratégicos</td></tr>
+    <tr><td><strong>Productos sin ventas en N días</strong></td><td>Productos LEFT JOIN items; WHERE items IS NULL en período</td><td>productos + ordenes.items</td><td>SÍ</td><td>Depurar catálogo, detectar merma de demanda</td></tr>
+    <tr><td><strong>Mix de ventas por categoría</strong></td><td>SUM(subtotal) GROUP BY product.category</td><td>ordenes.items.product.category</td><td>SÍ</td><td>Diversificación, dependencia de categoría</td></tr>
+    <tr><td><strong>Rentabilidad por producto</strong></td><td>(precio_venta - costo) / precio_venta × 100</td><td>costo en productos (FALTA)</td><td>NO</td><td>Optimizar mix hacia mayor margen</td></tr>
+    <tr><td><strong>Productos más bonificados</strong></td><td>COUNT(items con discount.type=bonus) GROUP BY product</td><td>ordenes.items.discount (EXISTE)</td><td>SÍ</td><td>Revisar política de precios de lista</td></tr>
+    <tr><td><strong>Impacto económico bonificaciones</strong></td><td>SUM(discount.value × product.price) por período</td><td>ordenes.items.discount (EXISTE)</td><td>SÍ</td><td>Costo real de la política de bonificaciones</td></tr>
+  </table>
+
+  <h2>6.5 Descuentos y Bonificaciones</h2>
+  <table>
+    <tr><th>KPI</th><th>Cómo se calcula</th><th>Dato necesario</th><th>Hist.</th><th>Valor de negocio</th></tr>
+    <tr><td><strong>% promedio bonificado por vendedor</strong></td><td>AVG(descuentoPedido) GROUP BY vendedorId</td><td>ordenes.descuentoPedido ✓ v2.0</td><td>SÍ</td><td>Control de política comercial</td></tr>
+    <tr><td><strong>Monto total resignado en descuentos</strong></td><td>SUM(total × descuentoPedido/100) por período</td><td>ordenes.descuentoPedido ✓ v2.0</td><td>SÍ</td><td>Impacto económico real en el margen</td></tr>
+    <tr><td><strong>Vendedores que más descuentan</strong></td><td>AVG(descuentoPedido) ORDER DESC por vendedor</td><td>ordenes.descuentoPedido ✓ v2.0</td><td>SÍ</td><td>Identificar quiénes ceden margen para cerrar</td></tr>
+    <tr><td><strong>Volumen de bonificaciones por unidades</strong></td><td>SUM(items.discount.value WHERE type=bonus) por período</td><td>ordenes.items.discount (EXISTE)</td><td>SÍ</td><td>Unidades entregadas gratis</td></tr>
+    <tr><td><strong>Productos más descontados (%)</strong></td><td>AVG(items.discount.value WHERE type=percent) GROUP BY producto</td><td>ordenes.items.discount (EXISTE)</td><td>SÍ</td><td>Revisar precios de lista de esos productos</td></tr>
+    <tr><td><strong>Correlación descuento ↔ recompra</strong></td><td>Regresión descuento_otorgado vs días_a_siguiente_orden</td><td>FK clienteId + descuentoPedido (PARCIAL)</td><td>NO</td><td>¿Los descuentos fidelizan o entrenan a pedir siempre descuento?</td></tr>
+  </table>
+
+  <h2>6.6 Adopción y Uso de la Aplicación</h2>
+  <table>
+    <tr><th>KPI</th><th>Cómo se calcula</th><th>Dato necesario</th><th>Hist.</th><th>Valor de negocio</th></tr>
+    <tr><td><strong>Usuarios activos mensuales (MAU)</strong></td><td>COUNT DISTINCT vendedorId con sesión en 30 días</td><td>sesiones ✓ v2.0</td><td>SÍ</td><td>Salud de adopción del producto</td></tr>
+    <tr><td><strong>Uso de IA (% pedidos con IA)</strong></td><td>COUNT WHERE metodoEntrada IN ('voz-ia','texto-ia') / total</td><td>ordenes.metodoEntrada ✓ v2.0</td><td>SÍ</td><td>Validar inversión en feature de IA</td></tr>
+    <tr><td><strong>Uso de voz (% pedidos con voz)</strong></td><td>COUNT WHERE metodoEntrada IN ('voz','voz-ia') / total</td><td>ordenes.metodoEntrada ✓ v2.0</td><td>SÍ</td><td>Adopción de feature de dictado</td></tr>
+    <tr><td><strong>Uso del escáner de códigos</strong></td><td>COUNT WHERE metodoEntrada = 'escaner'</td><td>ordenes.metodoEntrada ✓ v2.0</td><td>SÍ</td><td>Adopción del escáner de barras</td></tr>
+    <tr><td><strong>Distribución por canal de carga</strong></td><td>COUNT GROUP BY metodoEntrada → histograma</td><td>ordenes.metodoEntrada ✓ v2.0</td><td>SÍ</td><td>Diseño de UX, priorización de roadmap</td></tr>
+    <tr><td><strong>Tasa de retención de usuarios</strong></td><td>% usuarios activos mes N que también activos en mes N-1</td><td>sesiones ✓ v2.0</td><td>SÍ</td><td>Churn potencial de la plataforma</td></tr>
+    <tr><td><strong>Features nunca usadas</strong></td><td>Features sin eventos en eventos_app</td><td>eventos_app (FALTA)</td><td>NO</td><td>Eliminar dead weight del producto</td></tr>
+  </table>
+
+  <h2>6.7 Productividad y Eficiencia Operativa</h2>
+  <table>
+    <tr><th>KPI</th><th>Cómo se calcula</th><th>Dato necesario</th><th>Hist.</th><th>Valor de negocio</th></tr>
+    <tr><td><strong>Pedidos por hora trabajada</strong></td><td>COUNT(ordenes) / SUM(duracionMinutos/60) por vendedor</td><td>ordenes + sesiones ✓ v2.0</td><td>SÍ</td><td>Eficiencia real del vendedor en campo</td></tr>
+    <tr><td><strong>Facturación por hora trabajada</strong></td><td>SUM(total) / SUM(duracionMinutos/60) por vendedor</td><td>ordenes + sesiones ✓ v2.0</td><td>SÍ</td><td>Productividad económica del tiempo invertido</td></tr>
+    <tr><td><strong>Tiempo promedio de atención al pedido</strong></td><td>AVG(updatedAt - createdAt) WHERE estado = 'visto'</td><td>ordenes.updatedAt + estado</td><td>SÍ</td><td>Eficiencia del back office del mayorista</td></tr>
+    <tr><td><strong>Pedidos pendientes acumulados</strong></td><td>COUNT WHERE estado = 'pendiente'</td><td>ordenes.estado</td><td>NO</td><td>Backlog del admin, alerta de sobrecarga</td></tr>
+    <tr><td><strong>Tasa de cancelación</strong></td><td>COUNT(canceladas) / COUNT(total) por período</td><td>ordenes.estado</td><td>SÍ</td><td>Calidad del proceso de pedidos</td></tr>
+  </table>
+
+  <h2>6.8 Salud Comercial de la Distribuidora</h2>
+  <table>
+    <tr><th>KPI</th><th>Cómo se calcula</th><th>Dato necesario</th><th>Hist.</th><th>Valor de negocio</th></tr>
+    <tr><td><strong>Crecimiento YoY</strong></td><td>(ventas_año_actual - ventas_año_anterior) / ventas_año_anterior</td><td>historial ordenes &gt; 12 meses</td><td>SÍ</td><td>Tendencia estructural del negocio</td></tr>
+    <tr><td><strong>Estacionalidad de ventas</strong></td><td>Ventas por mes histórico comparado con promedio</td><td>historial ordenes</td><td>SÍ</td><td>Planificación de stock y personal</td></tr>
+    <tr><td><strong>Dependencia del top cliente</strong></td><td>ventas_cliente_top / ventas_totales × 100</td><td>FK clienteId en órdenes (FALTA)</td><td>NO</td><td>Riesgo de concentración</td></tr>
+    <tr><td><strong>Margen bruto por período</strong></td><td>SUM(precio_venta - costo) / SUM(precio_venta)</td><td>costo en productos (FALTA)</td><td>NO</td><td>Rentabilidad real del negocio</td></tr>
+    <tr><td><strong>Días de cuentas por cobrar (DSO)</strong></td><td>SUM(facturas_pendientes) / ventas_diarias_promedio</td><td>cobranza (FALTA)</td><td>NO</td><td>Liquidez y salud financiera</td></tr>
+  </table>
+
+  <!-- SECCIÓN 7 -->
+  <h1>7. Eventos que Conviene Registrar Desde Ahora</h1>
+
+  <div class="alert alert-purple">
+    <strong>Principio clave: "Registrar ahora, analizar después"</strong>
+    El costo de almacenar un evento en Firestore es mínimo. El costo de no haberlo registrado cuando se necesita es muy alto. Los eventos siguientes pueden guardarse en la colección <code>eventos_app</code> con muy poco código adicional.
+  </div>
+
+  <table>
+    <tr><th>Evento</th><th>Cuándo dispararlo</th><th>Qué guardar</th><th>Para qué servirá</th></tr>
+    <tr><td><strong>sesion_inicio</strong></td><td>Al hacer login</td><td>vendedorId, empresaId, timestamp, deviceId, plataforma</td><td>✓ YA IMPLEMENTADO en v2.0 (colección sesiones)</td></tr>
+    <tr><td><strong>sesion_fin</strong></td><td>Al cerrar sesión</td><td>vendedorId, empresaId, timestamp, duracionMinutos</td><td>✓ YA IMPLEMENTADO en v2.0</td></tr>
+    <tr><td><strong>pedido_confirmado</strong></td><td>Al finalizar y enviar pedido</td><td>ordenId, vendedorId, clienteId, metodoEntrada, itemsCount, total, descuentoPedido</td><td>✓ PARCIAL — metodoEntrada y descuentoPedido YA IMPLEMENTADOS</td></tr>
+    <tr><td><strong>producto_buscado</strong></td><td>Al buscar en el catálogo</td><td>vendedorId, termino, resultados_count, encontrado</td><td>Calidad del catálogo, términos sin resultado</td></tr>
+    <tr><td><strong>producto_no_encontrado</strong></td><td>Cuando una búsqueda devuelve 0 resultados</td><td>vendedorId, termino, timestamp</td><td>Detectar gaps en el catálogo</td></tr>
+    <tr><td><strong>ia_usada</strong></td><td>Al procesar con Gemini</td><td>vendedorId, exito, lineasProcesadas, lineasEncontradas</td><td>Tasa de éxito de la IA, valor del feature</td></tr>
+    <tr><td><strong>escaner_usado</strong></td><td>Al escanear código de barras</td><td>vendedorId, exito, codigoEscaneado, productoEncontrado</td><td>Adopción del escáner, calidad de base de datos</td></tr>
+    <tr><td><strong>cliente_seleccionado</strong></td><td>Al elegir cliente para el pedido</td><td>vendedorId, clienteId, esRepeticion</td><td>Vinculación pedido-cliente confiable</td></tr>
+    <tr><td><strong>catalogo_actualizado</strong></td><td>Al importar o modificar catálogo</td><td>adminId, productosNuevos, productosActualizados, timestamp</td><td>Frecuencia de mantenimiento, auditoría</td></tr>
+    <tr><td><strong>precio_modificado</strong></td><td>Al cambiar precio de un producto</td><td>adminId, productoId, precioAnterior, precioNuevo</td><td>Historial de precios, análisis de impacto</td></tr>
+    <tr><td><strong>pedido_compartido</strong></td><td>Al exportar por WhatsApp/PDF/Excel</td><td>vendedorId, ordenId, formato, timestamp</td><td>Uso de cada canal de salida</td></tr>
+    <tr><td><strong>error_app</strong></td><td>Al capturar excepción JS</td><td>vendedorId, url, mensajeError, timestamp</td><td>Monitoreo de calidad en producción</td></tr>
+  </table>
+
+  <!-- SECCIÓN 8 -->
+  <h1>8. Sistema de Alertas Automáticas</h1>
+
+  <p>Las alertas deberían dispararse automáticamente y enviarse por email/push/WhatsApp al dueño de la distribuidora. En v2.0 con Firebase se implementan como Cloud Functions con triggers de Firestore o funciones programadas (Cloud Scheduler).</p>
+
+  <table>
+    <tr><th>Alerta</th><th>Condición de disparo</th><th>Urgencia</th><th>Acción sugerida</th></tr>
+    <tr><td><strong>Vendedor inactivo</strong></td><td>lastSeen &gt; 48 hs en días laborables sin orden nueva</td><td><span class="badge badge-yellow">Media</span></td><td>Llamar al vendedor, verificar problema técnico</td></tr>
+    <tr><td><strong>Caída abrupta de ventas</strong></td><td>Facturación diaria &lt; 50% del promedio últimas 2 semanas</td><td><span class="badge badge-red">Alta</span></td><td>Reunión de equipo, análisis de causa raíz</td></tr>
+    <tr><td><strong>Cliente sin compra</strong></td><td>Cliente activo sin pedido en &gt; 30 días</td><td><span class="badge badge-yellow">Media</span></td><td>Asignar visita de recuperación al vendedor</td></tr>
+    <tr><td><strong>Exceso de descuentos</strong></td><td>AVG(descuentoPedido) de un vendedor &gt; umbral autorizado en la semana</td><td><span class="badge badge-red">Alta</span></td><td>Conversación con vendedor, reforzar política</td></tr>
+    <tr><td><strong>Meta mensual en riesgo</strong></td><td>Al día 20 del mes, cumplimiento &lt; 60% de meta</td><td><span class="badge badge-red">Alta</span></td><td>Acciones de cierre: ofertas, visitas prioritarias</td></tr>
+    <tr><td><strong>Producto sin ventas</strong></td><td>Producto del catálogo sin ventas en &gt; 21 días</td><td><span class="badge badge-green">Baja</span></td><td>Revisar precio, stock o interés del mercado</td></tr>
+    <tr><td><strong>Concentración peligrosa</strong></td><td>Un solo cliente representa &gt; 40% de la facturación mensual</td><td><span class="badge badge-yellow">Media</span></td><td>Estrategia de diversificación de cartera</td></tr>
+    <tr><td><strong>Catálogo desactualizado</strong></td><td>Sin modificaciones al catálogo en &gt; 60 días</td><td><span class="badge badge-green">Baja</span></td><td>Recordatorio de actualización de precios</td></tr>
+    <tr><td><strong>Pedido anormalmente alto</strong></td><td>total &gt; AVG + 3×stddev del vendedor</td><td><span class="badge badge-yellow">Media</span></td><td>Verificar con el vendedor antes de confirmar</td></tr>
+    <tr><td><strong>Crecimiento negativo 2 meses seguidos</strong></td><td>Variación &lt; 0 por 2 períodos consecutivos</td><td><span class="badge badge-red">Alta</span></td><td>Revisión estratégica urgente</td></tr>
+  </table>
+
+  <!-- SECCIÓN 9 -->
+  <h1>9. Analítica Avanzada y Modelos Predictivos (Futuro)</h1>
+
+  <div class="alert">
+    <strong>Fase futura — requiere 6-12 meses de histórico acumulado</strong>
+    Es fundamental empezar a registrar los eventos desde ahora (especialmente la FK clienteId en órdenes) para habilitar estos modelos en el futuro.
+  </div>
+
+  <table>
+    <tr><th>Modelo / Análisis</th><th>Cómo funciona</th><th>Datos necesarios</th><th>Valor de negocio</th></tr>
+    <tr><td><strong>Scoring de vendedores</strong></td><td>Índice compuesto: pedidos, facturación, sesiones, descuentos, clientes nuevos. Normalizado 0-100.</td><td>ordenes + sesiones ✓ (parcial ya disponible)</td><td>Ranking objetivo, incentivos, coaching dirigido</td></tr>
+    <tr><td><strong>Segmentación RFM de clientes</strong></td><td>Recency + Frequency + Monetary. Quintiles 1-5 → 5 grupos estratégicos.</td><td>FK clienteId + historial &gt; 6 meses</td><td>Priorización de visitas, ofertas personalizadas</td></tr>
+    <tr><td><strong>Predicción de churn de cliente</strong></td><td>Modelo logístico: días sin compra, tendencia de ticket, cambio en frecuencia → probabilidad de abandono.</td><td>FK clienteId + historial &gt; 12 meses</td><td>Intervención proactiva antes de perder el cliente</td></tr>
+    <tr><td><strong>Predicción de próxima compra</strong></td><td>Serie temporal (Prophet/ARIMA) por cliente: predice fecha y monto esperado del próximo pedido.</td><td>FK clienteId + fechas exactas &gt; 6 meses</td><td>Planificación de visitas, anticipar necesidades</td></tr>
+    <tr><td><strong>Recomendación de productos</strong></td><td>Market basket analysis: "quien compra A y B también suele comprar C". Collaborative filtering.</td><td>Historial de items por cliente &gt; 3 meses</td><td>Aumentar ticket promedio, cross-selling efectivo</td></tr>
+    <tr><td><strong>Detección de anomalías</strong></td><td>Z-score en facturación. Alerta cuando vendedor o cliente se desvía &gt; 2σ de su historial personal.</td><td>Historial &gt; 60 días por vendedor/cliente</td><td>Detectar errores, fraudes, cambios de comportamiento</td></tr>
+    <tr><td><strong>Forecasting de ventas mensual</strong></td><td>Serie temporal estacional: proyecta ventas próximos 3 meses con intervalo de confianza.</td><td>Historial &gt; 24 meses de facturación</td><td>Planificación de stock, presupuesto</td></tr>
+    <tr><td><strong>Análisis de elasticidad de precios</strong></td><td>Correlacionar cambios en precios_historico con variación de cantidades vendidas por producto.</td><td>precios_historico + items (FALTA)</td><td>Optimizar estrategia de precios</td></tr>
+  </table>
+
+  <!-- SECCIÓN 10 -->
+  <h1>10. Dashboard Ejecutivo para el Dueño de la Distribuidora</h1>
+  <p>Vista de alto nivel. Responde: <em>"¿Cómo está yendo mi negocio este mes?"</em></p>
+
+  <div class="dashboard">
+    <div class="dashboard-header">MAYOLISTA 2.0 — Dashboard Ejecutivo · Mayo 2026</div>
+    <div class="dashboard-body">
+      <div class="kpi-row">
+        <div class="kpi-box">
+          <div class="kpi-label">Facturación del mes</div>
+          <div class="kpi-value">$2.847.300</div>
+          <div class="kpi-delta delta-up">▲ +12% vs mayo anterior</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">Pedidos realizados</div>
+          <div class="kpi-value">284</div>
+          <div class="kpi-delta delta-up">▲ +8% vs mayo anterior</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">Ticket promedio</div>
+          <div class="kpi-value">$10.025</div>
+          <div class="kpi-delta delta-up">▲ +4% vs mayo anterior</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">Proyección cierre mes</div>
+          <div class="kpi-value">$3.100.000</div>
+          <div class="kpi-delta" style="color:#888">Al ritmo actual (día 21/31)</div>
+        </div>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi-box">
+          <div class="kpi-label">Clientes activos</div>
+          <div class="kpi-value">87</div>
+          <div class="kpi-delta delta-up">+3 nuevos este mes</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">Clientes en riesgo</div>
+          <div class="kpi-value" style="color:#ef4444">11</div>
+          <div class="kpi-delta delta-down">Sin compra &gt; 30 días</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">Vendedores activos</div>
+          <div class="kpi-value">5 / 6</div>
+          <div class="kpi-delta delta-down">1 inactivo hace 3 días</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">Descuento resignado</div>
+          <div class="kpi-value" style="color:#f59e0b">$42.000</div>
+          <div class="kpi-delta" style="color:#888">3.4% de la facturación · NUEVO v2.0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Métricas completas del Dashboard Ejecutivo</h3>
+  <div class="cards">
+    <div class="card"><div class="card-title">Financiero</div><div class="card-body">Facturación total · Variación vs. mes anterior · Variación vs. meta · Proyección de cierre · Ticket promedio con tendencia</div></div>
+    <div class="card"><div class="card-title">Clientes</div><div class="card-body">Clientes activos / inactivos · Nuevos incorporados · En riesgo de abandono · Ranking por facturación</div></div>
+    <div class="card"><div class="card-title">Vendedores</div><div class="card-body">Activos / inactivos hoy · Mejor vendedor · Ranking de facturación · Horas trabajadas (NUEVO v2.0)</div></div>
+    <div class="card"><div class="card-title">Productos</div><div class="card-body">Top 3 más vendidos · Categoría con mayor crecimiento · Productos sin ventas en 30 días</div></div>
+    <div class="card"><div class="card-title">Descuentos — NUEVO v2.0</div><div class="card-body">Monto total resignado · % promedio por vendedor · Vendedor que más descuenta</div></div>
+    <div class="card"><div class="card-title">Operativo</div><div class="card-body">Pedidos pendientes sin ver · Hora y día con mayor actividad · Gráfico de facturación diaria · Alertas activas</div></div>
+  </div>
+
+  <!-- SECCIÓN 11 -->
+  <h1>11. Dashboard para Supervisores / Gerentes Comerciales</h1>
+  <p>Vista operativa detallada. Responde: <em>"¿Quién está rindiendo, quién no, y qué hay que hacer ahora?"</em></p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-title">Tabla de vendedores</div>
+      <div class="card-body">Nombre · Pedidos del mes · Facturación · Ticket prom. · Horas conectado (NUEVO v2.0) · Cumplimiento meta % · Última sesión. Ordenable por cualquier columna.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Pipeline del día</div>
+      <div class="card-body">Pedidos de hoy en tiempo real, por vendedor y hora. Identifica quién ya trabajó y quién no. Sesiones activas en este momento.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Análisis de descuentos — NUEVO v2.0</div>
+      <div class="card-body">Quién está descontando más de lo autorizado, en qué órdenes, con qué frecuencia. Impacto económico acumulado del mes.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Clientes en riesgo</div>
+      <div class="card-body">Lista de clientes sin compra reciente, con último pedido, vendedor asignado y botón "asignar visita".</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Adopción por método — NUEVO v2.0</div>
+      <div class="card-body">Distribución de pedidos por canal: IA, voz, escáner, texto, manual. Por vendedor y global.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Comparativo mensual</div>
+      <div class="card-body">Gráfico de barras por vendedor: mes actual vs anterior vs mismo mes del año pasado.</div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 12 -->
+  <h1>12. Reporte Mensual Automático Generado por IA</h1>
+
+  <p>Se envía por email al dueño de la distribuidora los primeros días de cada mes. Se genera automáticamente combinando datos de Firestore + texto narrativo generado por <strong>Claude API (Anthropic)</strong> — que ya está integrado como <code>VITE_GEMINI_KEY</code> y puede extenderse a Claude para reportes.</p>
+
+  <div class="alert alert-purple">
+    <strong>Implementación técnica sugerida para v2.0</strong>
+    Firebase Cloud Function ejecutada el día 1 de cada mes → consulta colecciones de Firestore → calcula métricas del mes anterior → llama a Claude API con los datos → genera texto narrativo personalizado → envía email con SendGrid o EmailJS.
+  </div>
+
+  <div class="reporte-seccion">
+    <div class="reporte-seccion-title">Sección 1 — Resumen ejecutivo (generado por IA)</div>
+    <div class="reporte-cita">
+      "Estimado Héctor, durante mayo de 2026 tu distribuidora facturó $2.847.300, un 12% más que el mes anterior y el mejor mayo registrado en la plataforma. 5 de tus 6 vendedores operaron con normalidad, acumulando un total de 847 horas de trabajo registradas en la app. El equipo generó 284 pedidos con un ticket promedio de $10.025.
+
+      Sin embargo, 11 clientes no realizaron ningún pedido en el mes, representando una oportunidad de recuperación estimada en $180.000 según su historial. Además, se resignaron $42.000 en descuentos (3.4% de la facturación) — te recomendamos revisar la política con el vendedor que promedió 8.2% de descuento en sus pedidos."
+    </div>
+  </div>
+
+  <div class="reporte-seccion">
+    <div class="reporte-seccion-title">Sección 2 — Métricas clave del mes</div>
+    <div class="reporte-item">Facturación total y variación vs. mes anterior y meta</div>
+    <div class="reporte-item">Cantidad de pedidos y variación</div>
+    <div class="reporte-item">Ticket promedio y tendencia de 3 meses</div>
+    <div class="reporte-item">Clientes activos / inactivos</div>
+    <div class="reporte-item">Nuevos clientes incorporados</div>
+    <div class="reporte-item">Descuento total resignado y % sobre facturación <span class="badge badge-purple">NUEVO v2.0</span></div>
+    <div class="reporte-item">Horas trabajadas por el equipo <span class="badge badge-purple">NUEVO v2.0</span></div>
+    <div class="reporte-item">Distribución de pedidos por método de carga <span class="badge badge-purple">NUEVO v2.0</span></div>
+  </div>
+
+  <div class="reporte-seccion">
+    <div class="reporte-seccion-title">Sección 3 — Ranking de vendedores</div>
+    <div class="reporte-item">Tabla: vendedor · pedidos · facturación · ticket prom. · horas conectado · descuento promedio · cumplimiento meta</div>
+    <div class="reporte-item">Podio 🥇🥈🥉 (gamificación)</div>
+    <div class="reporte-item">Texto IA: destacar logros y señalar quién necesita apoyo</div>
+  </div>
+
+  <div class="reporte-seccion">
+    <div class="reporte-seccion-title">Sección 4 — Top productos del mes</div>
+    <div class="reporte-item">Top 10 por unidades y por facturación</div>
+    <div class="reporte-item">Productos que subieron más vs. mes anterior</div>
+    <div class="reporte-item">Productos que bajaron (alerta)</div>
+    <div class="reporte-item">Productos sin ventas en el mes</div>
+  </div>
+
+  <div class="reporte-seccion">
+    <div class="reporte-seccion-title">Sección 5 — Clientes: oportunidades y alertas</div>
+    <div class="reporte-item">Clientes sin compra en el mes (listado con último pedido)</div>
+    <div class="reporte-item">Clientes con mayor crecimiento vs. mes anterior</div>
+    <div class="reporte-item">Clientes con mayor caída</div>
+    <div class="reporte-item">Texto IA: "Tu mayor oportunidad este mes es recuperar estos 3 clientes que históricamente compran en junio..."</div>
+  </div>
+
+  <div class="reporte-seccion">
+    <div class="reporte-seccion-title">Sección 6 — Recomendaciones de acción (generadas por IA)</div>
+    <div class="reporte-cita">
+      "1. Contactar a los 11 clientes inactivos esta semana antes de que avance junio.<br>
+      2. Revisar el nivel de descuentos del vendedor [Nombre] — promedio 8.2% en mayo, por encima del límite recomendado.<br>
+      3. El método 'IA + texto' fue usado en 68% de los pedidos — el escáner solo en 4%. Capacitar al equipo en el uso del escáner podría acelerar la carga.<br>
+      4. Considerá actualizar los precios del catálogo — no hay modificaciones registradas desde hace 47 días en un contexto inflacionario.<br>
+      5. 3 vendedores promediaron menos de 2 horas conectadas por día. Coordinar con ellos para mejorar el uso de la app en campo."
+    </div>
+  </div>
+
+  <!-- SECCIÓN 13 -->
+  <h1>13. Hoja de Ruta Analítica — Qué Implementar y Cuándo</h1>
+
+  <table>
+    <tr>
+      <th>Fase</th>
+      <th>Cuándo</th>
+      <th>Qué implementar</th>
+      <th>KPIs que habilita</th>
+      <th>Esfuerzo</th>
+    </tr>
+    <tr>
+      <td><strong>Fase 0 — Completada en v2.0</strong></td>
+      <td>Mayo 2026 ✓</td>
+      <td>descuentoPedido · metodoEntrada · colección sesiones · .gitignore</td>
+      <td>Análisis de descuentos · adopción de features · productividad horaria · seguridad</td>
+      <td><span class="badge badge-green">Bajo</span></td>
+    </tr>
+    <tr>
+      <td><strong>Fase 1 — Base</strong></td>
+      <td>Inmediato</td>
+      <td>FK clienteId en órdenes · zona en clientes · colección eventos_app · costo en productos</td>
+      <td>Todos los KPIs por cliente · churn · rentabilidad · adopción de features</td>
+      <td><span class="badge badge-green">Bajo</span></td>
+    </tr>
+    <tr>
+      <td><strong>Fase 2 — Operativa</strong></td>
+      <td>1-3 meses</td>
+      <td>metas_comerciales · zonas · precios_historico · visitas_comerciales</td>
+      <td>Cumplimiento de metas · análisis geográfico · impacto de precios · efectividad de visitas</td>
+      <td><span class="badge badge-yellow">Medio</span></td>
+    </tr>
+    <tr>
+      <td><strong>Fase 3 — Reporting</strong></td>
+      <td>3-6 meses</td>
+      <td>Dashboard en AdminPanel · Cloud Functions para cálculo · Envío de email mensual</td>
+      <td>Dashboard ejecutivo completo · Reporte mensual automático · Alertas por email</td>
+      <td><span class="badge badge-yellow">Medio</span></td>
+    </tr>
+    <tr>
+      <td><strong>Fase 4 — Predictiva</strong></td>
+      <td>6-12 meses</td>
+      <td>Integración Claude API para narración · Scoring de vendedores · RFM de clientes</td>
+      <td>Reporte narrativo IA · Predicción de churn · Recomendación de productos</td>
+      <td><span class="badge badge-red">Alto</span></td>
+    </tr>
+    <tr>
+      <td><strong>Fase 5 — Avanzada</strong></td>
+      <td>12+ meses</td>
+      <td>Modelos ML (Prophet, collaborative filtering) · cobranza · stock</td>
+      <td>Forecasting de ventas · Optimización de rutas · Rentabilidad completa</td>
+      <td><span class="badge badge-red">Muy alto</span></td>
+    </tr>
+  </table>
+
+  <div class="alert alert-green">
+    <strong>⚡ Acción inmediata de mayor impacto</strong>
+    Vincular <code>clienteId</code> como referencia real en cada orden es el cambio de mayor retorno analítico con el menor esfuerzo. Habilita el 60% de los KPIs marcados como NO DISPONIBLES en este documento. Todo lo demás construye sobre esta base.
+  </div>
+
+  <h2>Conclusión</h2>
+  <p>MAYOLISTA 2.0 representa un salto significativo respecto a la versión anterior en arquitectura, seguridad y capacidades analíticas. La migración a <strong>Firebase Firestore</strong> habilita sincronización reactiva en tiempo real, roles diferenciados con autenticación real, y una estructura de datos más sólida.</p>
+  <p>En esta sesión se incorporaron tres mejoras analíticas concretas: registro de <strong>sesiones de vendedores</strong> con duración, persistencia del <strong>descuento global del pedido</strong> y clasificación del <strong>método de entrada</strong> de cada pedido. Estos tres cambios, con mínimo impacto en el código, habilitan un conjunto de KPIs que antes era imposible calcular.</p>
+  <p>Con <strong>un cambio estructural adicional</strong> — FK clienteId en órdenes — se habilita el 70% de los KPIs de este inventario. El reporte mensual automático generado por IA es la funcionalidad de mayor diferenciación competitiva: convierte datos en lenguaje de negocio, ahorra tiempo al dueño de la distribuidora y genera valor percibido que justifica la suscripción mensual.</p>
+
+  <div class="footer">
+    MAYOLISTA — Documento técnico de analítica · Versión 2.0 · Mayo 2026 · Firebase Firestore + GitHub Pages
+  </div>
+
+</div>
+</body>
+</html>

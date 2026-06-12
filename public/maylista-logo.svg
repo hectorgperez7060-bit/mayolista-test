@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <!-- tab at top -->
+  <rect x="44" y="10" width="32" height="16" rx="6" fill="#4a9eff"/>
+  <!-- lid/cover -->
+  <rect x="18" y="24" width="84" height="28" rx="12" fill="#dce9ff"/>
+  <!-- box body -->
+  <rect x="12" y="48" width="96" height="58" rx="16" fill="none" stroke="url(#boxG)" stroke-width="6.5"/>
+  <!-- arrow right -->
+  <line x1="26" y1="70" x2="94" y2="70" stroke="url(#arrR)" stroke-width="7" stroke-linecap="round"/>
+  <polyline points="78,61 94,70 78,79" stroke="url(#arrR)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- arrow left -->
+  <line x1="94" y1="90" x2="26" y2="90" stroke="url(#arrL)" stroke-width="7" stroke-linecap="round"/>
+  <polyline points="42,81 26,90 42,99" stroke="url(#arrL)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <defs>
+    <linearGradient id="boxG" x1="12" y1="48" x2="108" y2="106" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7ec8ff"/>
+      <stop offset="100%" stop-color="#1a56db"/>
+    </linearGradient>
+    <linearGradient id="arrR" x1="26" y1="70" x2="94" y2="70" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#93c5fd"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="arrL" x1="94" y1="90" x2="26" y2="90" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7ec8ff"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+  </defs>
+</svg>
