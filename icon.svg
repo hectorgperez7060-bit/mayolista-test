@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <!-- Gold ring gradient -->
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#FFD700"/>
+      <stop offset="40%"  stop-color="#FFA500"/>
+      <stop offset="70%"  stop-color="#C8860A"/>
+      <stop offset="100%" stop-color="#FFD700"/>
+    </linearGradient>
+    <!-- Blue background radial -->
+    <radialGradient id="blueBg" cx="38%" cy="30%" r="70%">
+      <stop offset="0%"   stop-color="#2D6FD4"/>
+      <stop offset="60%"  stop-color="#1A4B9B"/>
+      <stop offset="100%" stop-color="#0D2B6B"/>
+    </radialGradient>
+    <!-- Orange swoosh gradient -->
+    <linearGradient id="swoosh" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#FF4500"/>
+      <stop offset="50%"  stop-color="#FF8C00"/>
+      <stop offset="100%" stop-color="#FFC200"/>
+    </linearGradient>
+    <!-- Arrow gradient -->
+    <linearGradient id="arrowG" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#60B0FF"/>
+      <stop offset="100%" stop-color="#1A7BFF"/>
+    </linearGradient>
+    <!-- Glow filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="softglow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Gold outer ring -->
+  <circle cx="256" cy="256" r="252" fill="url(#gold)"/>
+  <!-- Blue background -->
+  <circle cx="256" cy="256" r="232" fill="url(#blueBg)"/>
+
+  <!-- ── Orange swoosh curves ── -->
+  <!-- Main swoosh arc -->
+  <path d="M 80 340 Q 150 420 280 390 Q 380 360 420 280 Q 440 220 400 170"
+        fill="none" stroke="url(#swoosh)" stroke-width="28" stroke-linecap="round" opacity="0.85" filter="url(#glow)"/>
+  <!-- Inner swoosh -->
+  <path d="M 110 350 Q 175 415 295 385 Q 380 358 415 285"
+        fill="none" stroke="url(#swoosh)" stroke-width="14" stroke-linecap="round" opacity="0.55"/>
+  <!-- Outer swoosh -->
+  <path d="M 60 325 Q 130 420 265 400 Q 375 375 425 275"
+        fill="none" stroke="#FF6600" stroke-width="8" stroke-linecap="round" opacity="0.35"/>
+
+  <!-- ── Shopping cart ── -->
+  <g transform="translate(256,200)" filter="url(#glow)">
+    <!-- Cart handle -->
+    <path d="M -90 -60 L -65 -60 L -20 40 L 70 40" fill="none" stroke="white" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Cart body -->
+    <rect x="-28" y="5" width="105" height="52" rx="8" fill="none" stroke="white" stroke-width="14"/>
+    <!-- Cart lines (items) -->
+    <line x1="-12" y1="22" x2="64" y2="22" stroke="white" stroke-width="8" stroke-linecap="round"/>
+    <line x1="-12" y1="36" x2="52" y2="36" stroke="white" stroke-width="8" stroke-linecap="round"/>
+    <line x1="-12" y1="50" x2="44" y2="50" stroke="white" stroke-width="8" stroke-linecap="round"/>
+    <!-- Wheels -->
+    <circle cx="-2" cy="68" r="12" fill="none" stroke="white" stroke-width="10"/>
+    <circle cx="62" cy="68" r="12" fill="none" stroke="white" stroke-width="10"/>
+  </g>
+
+  <!-- ── Blue arrow (up-right) ── -->
+  <g transform="translate(330,140) rotate(35)" filter="url(#softglow)">
+    <path d="M -10 60 L -10 -30 L 10 -30 L 10 60 Z" fill="url(#arrowG)" rx="5"/>
+    <path d="M -30 -18 L 0 -60 L 30 -18 Z" fill="url(#arrowG)"/>
+  </g>
+
+  <!-- ── Text ── -->
+  <text x="256" y="400" text-anchor="middle"
+        font-family="Arial Black, Arial, sans-serif"
+        font-weight="900" font-size="62" fill="white"
+        letter-spacing="2">MAYOLISTA</text>
+  <text x="256" y="438" text-anchor="middle"
+        font-family="Arial, sans-serif"
+        font-weight="600" font-size="28" fill="rgba(200,220,255,0.85)"
+        letter-spacing="4">APP MAYORISTA</text>
+</svg>
